@@ -1,0 +1,61 @@
+﻿@page "/fetchdata"
+@using System.Text.Json.Serialization
+@using Blazored.LocalStorage
+@using Newtonsoft.Json
+@inject ILocalStorageService localStorage
+<div class="container">
+    <div class="row">
+        <div class="card">
+            <div class="card-header">Product Count: @ProductCount </div>
+        </div>
+
+    </div>
+    <div class="row col-auto card mt-5">
+        <div class="form-group">
+            <label class="form-label"> Name</label>
+            <InputText @bind-Value="Product.Name"></InputText>
+            <button class="mt-2 btn btn-primary" @onclick="AddProduct">Add Product</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    public Product Product { get; set; } = new();
+    public int ProductCount { get; set; }
+
+    private async Task AddProduct()
+    {
+        List<Product> LocalProducts;
+        var stringProducts = await localStorage.GetItemAsStringAsync("Products");
+        if (string.IsNullOrEmpty(stringProducts))
+        {
+            LocalProducts = new List<Product>();
+        }
+        else
+        {
+            LocalProducts = JsonConvert.DeserializeObject<List<Product>>(stringProducts)!;
+        }
+
+        Product.Id = LocalProducts.Count + 1;
+        LocalProducts.Add(Product);
+        await localStorage.RemoveItemAsync("Products");
+        string serializeProducts = JsonConvert.SerializeObject(LocalProducts);
+        await localStorage.SetItemAsStringAsync("Products", serializeProducts);
+
+        ProductCount = LocalProducts.Count;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var stringProducts = await localStorage.GetItemAsStringAsync("Products");
+        if (!string.IsNullOrEmpty(stringProducts))
+        {
+            var Products = JsonConvert.DeserializeObject<List<Product>>(stringProducts)!;
+            ProductCount = Products.Count;
+            StateHasChanged();
+        }
+
+
+
+    }
+}
