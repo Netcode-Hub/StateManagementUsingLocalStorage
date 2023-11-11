@@ -1,4 +1,4 @@
-5 Ways of Handling State Management in Blazor Server or Web Assembly (Simple & Easy). <br/>
+#5 Ways of Handling State Management in Blazor Server or Web Assembly (Simple & Easy). <br/>
 # StateManagement Using Browser's Local Storage <br/>
 https://youtu.be/ni-yyUBB8Lk <br/>
 
